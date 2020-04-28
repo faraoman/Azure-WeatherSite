@@ -1,0 +1,108 @@
+﻿
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <title>Weather Site - Asp.Net Core - Azure</title>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js'></script>
+    <!-- Bootstrap core CSS -->
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="cover.css" rel="stylesheet">
+</head>
+<body class="text-center">
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <header class="masthead mb-auto">
+            <div class="inner">
+                <h3 class="masthead-brand">Cover</h3>
+                <nav class="nav nav-masthead justify-content-center">
+                    <a class="nav-link active" href="#">Home</a>
+                </nav>
+            </div>
+        </header>
+
+        <main role="main" class="inner cover">
+            <h1 class="cover-heading">Weather Forecast</h1>
+            <p class="lead"></p>
+            <div ng-app="App" ng-controller="WeatherController">
+                <table class="table" style="color:white;">
+                    <thead>
+                        <tr>
+                            <th>City</th>
+                            <th>Date and Time</th>
+                            <th>Temperature C</th>
+                            <th>Temperature F</th>
+                        </tr>
+                    </thead>
+                    <tbody ng-if="WeatherList && WeatherList.length > 0">
+                        <tr ng-repeat="item in WeatherList">
+                            <td>{{item.Summary}}</td>
+                            <td>{{item.Date | date:'dd-MM-yyyy HH:mm:ss'}}</td>
+                            <td>{{item.TemperatureC}}</td>
+                            <td>{{item.TemperatureF}}</td>
+                        </tr>
+                    </tbody>
+                    <tbody ng-if="!WeatherList || WeatherList.length == 0">
+                        <tr>
+                            <td colspan="4" class="text-center" ng-if="!loading">
+                                No weather forecast available
+                            </td>
+                            <td colspan="4" class="text-center" ng-if="loading">
+                                Loading weather forecast ...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <footer class="mastfoot mt-auto">
+            <div class="inner">
+                <p>Cover template for <a href="https://getbootstrap.com/">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        var app = angular.module("App", []);
+        app.controller('WeatherController', function ($scope, $http, $timeout) {
+            $scope.WeatherList = [];
+            $scope.loading = false;
+            $timeout(() => {
+                $scope.loading = true;
+                $http.get("/weatherforecast").then(function (succ) {
+                    $timeout(() => {
+                        $scope.loading = false;
+                        $scope.WeatherList = succ.data;
+                    }, 700);
+                }, function (err) {
+                    alert(err.status);
+                });
+            }, 500)
+
+        });
+    </script>
+
+</body>
+</html>
